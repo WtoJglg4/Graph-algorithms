@@ -131,8 +131,12 @@ void PrintTable(int arr[], int size, map<int, char> nodeNames, string tableName)
     cout << endl;
 }
 
+struct edge{
+    int source, destination, weight;
+};
+
 int main(){    
-    const int n = 7, m = 7;
+    // const int n = 7, m = 7;
     //это граф из лекции
     //H = head
     //ключи - численные номера вершин в shortest, pred. значения - соответствующие буквенные
@@ -144,14 +148,27 @@ int main(){
     //                         {7, 0, 0, 5, 0}};
 
     //мой граф 
-    const map<int, char> nodeNames = { {0, 'A'}, {1, 'B'}, {2, 'C'}, {3, 'D'}, {4, 'E'}, {5, 'F'}, {6, 'G'},{-1, 'H'} };
-    int Graph[n][m] = {    {0, 2, 1, 0, 0, 6, 0},
-                            {0, 0, 0, 0, 0, 7, 0},
-                            {0, 0, 0, 5, 2, 0, 0},
-                            {0, 0, 0, 0, 1, 2, 0},
-                            {0, 0, 0, 2, 0, 1, 4},
-                            {0, 0, 0, 0, 0, 0, 1},
-                            {0, 0, 0, 0, 0, 0, 1}};
+    // const map<int, char> nodeNames = { {0, 'A'}, {1, 'B'}, {2, 'C'}, {3, 'D'}, {4, 'E'}, {5, 'F'}, {6, 'G'},{-1, 'H'} };
+    // const map<char, int> nodeNamesLetters = { {'A', 0}, {'B', 1}, {'C', 2}, {'D', 3}, {'E', 4}, {'F', 5}, {'G', 6}, {'H', -1} };
+    // int Graph[n][m] = {    {0, 2, 1, 0, 0, 6, 0},
+    //                         {0, 0, 0, 0, 0, 7, 0},
+    //                         {0, 0, 0, 5, 2, 0, 0},
+    //                         {0, 0, 0, 0, 1, 2, 0},
+    //                         {0, 0, 0, 2, 0, 1, 4},
+    //                         {0, 0, 0, 0, 0, 0, 1},
+    //                         {0, 0, 0, 0, 0, 0, 1}};
+
+    const int n = 6, m = 6;
+    // const int n = 6, m = 8;
+    // edge Edges[] =     {edge{0, 1, 6}, edge{0, 2, 8}, edge{0, 3, 18}, edge{1, 4, 11}, edge{2, 3, 9}, edge{4, 5, 3}, edge{5, 2, 7}, edge{5, 3, 4}};
+    const map<int, char> nodeNames = { {0, '0'}, {1, '1'}, {2, '2'}, {3, '3'}, {4, '4'}, {5, '5'}, {-1, 'H'} };
+    const map<char, int> nodeNamesLetters = { {'0', 0}, {'1', 1}, {'2', 2}, {'3', 3}, {'4', 4}, {'5', 5}, {'H', -1} };
+    int Graph[n][m] = {    {0, 6, 8, 18, 0, 0},
+                            {0, 0, 0, 0, 11, 0},
+                            {0, 0, 0, 9, 0, 0},
+                            {0, 0, 0, 0, 0, 0},
+                            {0, 0, 0, 0, 0, 3},
+                            {0, 0, 7, 4, 0, 0}};
 
     int shortest[n]; //массив кратчайших путей до каждой из вершин
     int pred[n]; //предыдущая вершина на найденном кратчайшем пути для каждой из вершин
@@ -198,4 +215,26 @@ int main(){
     //форматированный вывод shortest и pred
     PrintTable(shortest, size(shortest), nodeNames, "Shortest");
     PrintTable(pred, size(pred), nodeNames, "Pred");
+
+    char letter;
+    cin >> letter;
+    int path[n - 1];
+    int nodeNum = nodeNamesLetters.at(letter);
+    path[0] = nodeNum;
+    int i = 1;
+    while (true) {
+        if (pred[nodeNum] == -1){
+            break;
+        }
+        path[i] = pred[nodeNum];
+        nodeNum = pred[nodeNum];
+        i++;
+    }
+    for (i = i-1;i> -1; i--){
+        cout << nodeNames.at(path[i]);
+        if (i != 0){
+            cout << "->";
+        }
+    }
+
 }
