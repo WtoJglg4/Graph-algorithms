@@ -117,7 +117,6 @@ int main(){
 
 
     //(bellmanFord picture graph)
-    //неориентированный
     const int fwSize = 12;
     int Graph[fwSize][fwSize] = {
     //   0  1  2  3  4  5  6  7  8  9  10 11
@@ -134,15 +133,6 @@ int main(){
         {0, 0, 0, 0, 0, 0, 6, 0, 0, 1, 0, 2},
         {0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 2, 0}
     };
-    for (int i = 0; i < fwSize; i++) {
-        for(int j = 0; j < fwSize; j++){
-            if(Graph[i][j] != Graph[j][i]){
-                cout <<"HUINYA EBANAYA";
-                return 1;
-            }
-        }
-    }
-
 
     int* graphMatr[fwSize];
     int* shortestMatr[fwSize];
@@ -168,6 +158,15 @@ int main(){
     cout << "Prim\n";
     PrintMatrix(graphMatr, fwSize);
     Prim(graphMatr, fwSize, tree);
+    cout << "Tree: \n";
+    PrintMatrix(tree, fwSize);
+
+    //Kruskal
+    cout << "\nKruskal\n";
+    PrintMatrix(graphMatr, fwSize);
+    Kruskal(graphMatr, fwSize, tree);
+    cout << "Tree: \n";
+    PrintMatrix(tree, fwSize);
 
     int a;
     cin >> a;

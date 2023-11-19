@@ -5,6 +5,40 @@
 #include "graphs.h"
 using namespace std;
 
+
+void PrintMatrix(int** Graph, int n){
+    int maxWidth = 0;
+
+    for(int i = 0; i < n; i++){
+        for(int j = 0; j < n; j++){
+            int width = to_string(Graph[i][j]).length();
+            maxWidth = max(maxWidth, width);
+        }
+    }
+
+
+    for(int i = 0; i < n; i++){
+        if(i == 0){
+            cout << setw(maxWidth + 1) << " ";
+            for(int j = 0; j < n; j++){
+                cout << setw(maxWidth) << j << " ";
+            } 
+            cout << endl;
+        }
+        cout << setw(maxWidth) << i << " ";
+        
+
+        for(int j = 0; j < n; j++){
+            if (Graph[i][j] == INT_MAX){
+                cout << setw(maxWidth) << "INF ";
+            } else{
+                cout << setw(maxWidth) << Graph[i][j] << " ";
+            }
+        }
+        cout << endl;
+    }
+}
+
 void BellmanFord(edge E[], int n, int m, int s, int shortest[], int pred[]){
     for (int i = 0; i < n; i++){
         shortest[i] = INT_MAX;
@@ -89,35 +123,6 @@ void FloydWarshall(int** Graph, int size, int** shortest, int** pred){
         // cout << endl;
     }
 }
-
-
-
-void PrintMatrix(int** Graph, int n){
-    int maxWidth = 0;
-
-    for(int i = 0; i < n; i++){
-        for(int j = 0; j < n; j++){
-            int width = to_string(Graph[i][j]).length();
-            maxWidth = max(maxWidth, width);
-        }
-    }
-
-    for(int i = 0; i < n; i++){
-        // cout << (*Graph)[i];
-        for(int j = 0; j < n; j++){
-            if (Graph[i][j] == INT_MAX){
-                cout << setw(maxWidth) << "INF ";
-            } else{
-                cout << setw(maxWidth) << Graph[i][j] << " ";
-            }
-        }
-        cout << endl;
-    }
-}
-
-
-
-
 
 
 
@@ -251,12 +256,7 @@ void Prim(int** Graph, int size, int** tree){
         V.erase(v);
         U.insert(v);
         cout << "v: " << v << endl;
-        // PQPrint();
-        // cout << "distToTree:\n";
-        // for (int i = 0; i < size; i++) {
-        //     cout << distToTree[i] << " ";
-        // } cout << endl;
-
+        
         //по всем смежным вершинам
         cout << "u: ";
         for(int u = 0; u < size; u++){
@@ -286,18 +286,82 @@ void Prim(int** Graph, int size, int** tree){
         tree[u][v] = distToTree[u];
         tree[v][u] = distToTree[u];
     }
-    cout << "Tree: \n";
-    PrintMatrix(tree, size);
-
-    // cout << "distToTree:\n";
-    // for (int i = 0; i < size; i++) {
-    //     cout << distToTree[i] << " ";
-    // }
-    // cout << "\npredInTree:\n";
-    // for (int i = 0; i < size; i++) {
-    //     cout << predInTree[i] << " ";
-    // }
 }
+
+
+void Kruskal(int** Graph, int size, int** tree){
+    //очистить дерево
+    int egdeCount = 0;
+    for(int i = 0; i < size; i++){
+        for(int j = 0; j < size; j++){
+            tree[i][j] = 0;
+            if(Graph[i][j]  != 0) egdeCount++;
+        }
+    }
+    egdeCount /= 2;
+
+    //создадим массив ребер графа
+    edge* edgeArr = new edge[egdeCount];
+    int edgeIndex = 0;
+    for(int i = 0; i < size; i++){
+        for(int j = i; j < size; j++){
+            if(Graph[i][j] != 0){
+                edgeArr[edgeIndex] = edge{i, j, Graph[i][j]};
+                edgeIndex++;    
+            }
+        }
+    }
+
+    //отсортируем пузырьком)) за nlogn лень))
+    for(int i = 0; i < edgeIndex -1; i++){
+        for(int j = i + 1; j < edgeIndex; j++){
+            if(edgeArr[i].weight > edgeArr[j].weight){
+                swap(edgeArr[i], edgeArr[j]);
+            }
+        }   
+    }
+    for(int i = 0; i < edgeIndex; i++){
+        cout << edgeArr[i].source << " " << edgeArr[i].destination << " " << edgeArr[i].weight << endl;
+    }
+
+
+    set<set<int>> subsetNodes;
+    //инициализируем одиночными вершинами
+    for(int i = 0; i < size; i++){
+        set<int> subset = {i};
+        subsetNodes.insert(subset);
+    }
+    
+    for(int i = 0; i < edgeIndex; i++){
+        set<int> Uset, Vset;
+        for(set<int> subset: subsetNodes){
+            if(subset.count(edgeArr[i].source) == 1){
+                Uset = subset;
+            }
+            if(subset.count(edgeArr[i].destination) == 1){
+                Vset = subset;
+            }
+        }
+        if(Uset != Vset){
+            subsetNodes.erase(Uset);
+            subsetNodes.erase(Vset);
+            set<int> merge;
+            for(int el: Uset) merge.insert(el);
+            for(int el: Vset) merge.insert(el);
+            subsetNodes.insert(merge);
+
+            int u = edgeArr[i].source, v = edgeArr[i].destination, w = edgeArr[i].weight;
+            tree[u][v] = w;
+            tree[v][u] = w;
+        }
+    }
+
+    for(set<int> subset: subsetNodes){
+        for(int el: subset) cout << el << " "; 
+        cout << endl;
+    }
+}
+
 
 
 
