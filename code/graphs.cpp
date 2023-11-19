@@ -2,13 +2,15 @@
 #include <limits.h>
 #include <iomanip>
 #include <set>
+#include <map>
 #include "graphs.h"
 using namespace std;
 
 
+//печать матрицы
 void PrintMatrix(int** Graph, int n){
+    //ищем максимальную ширину элемента таблицы
     int maxWidth = 0;
-
     for(int i = 0; i < n; i++){
         for(int j = 0; j < n; j++){
             int width = to_string(Graph[i][j]).length();
@@ -16,42 +18,76 @@ void PrintMatrix(int** Graph, int n){
         }
     }
 
-
+    maxWidth++;
     for(int i = 0; i < n; i++){
+        //печать номеров вершин по горизонтали
         if(i == 0){
-            cout << setw(maxWidth + 1) << " ";
+            cout << setw(maxWidth) << " ";
             for(int j = 0; j < n; j++){
-                cout << setw(maxWidth) << j << " ";
+                cout << setw(maxWidth) << j;
             } 
             cout << endl;
         }
-        cout << setw(maxWidth) << i << " ";
+        cout << setw(maxWidth) << i; //номера по вертикали
         
 
         for(int j = 0; j < n; j++){
             if (Graph[i][j] == INT_MAX){
-                cout << setw(maxWidth) << "INF ";
+                cout << setw(maxWidth) << "INF";
             } else{
-                cout << setw(maxWidth) << Graph[i][j] << " ";
+                cout << setw(maxWidth) << Graph[i][j];
             }
         }
         cout << endl;
     }
 }
 
+
+//печать shortest или pred
+void PrintTable(int arr[], int size, map<int, char> nodeNames, string tableName){
+    cout << tableName << ":\n";
+    for(int i = 0; i < size; i++){
+        cout << nodeNames.at(i) << " ";
+    }
+    cout << endl;
+    if (tableName == "Pred"){
+        for(int i = 0; i < size; i++){
+        cout << nodeNames.at(arr[i]) << " ";
+        }
+    } else{
+        for(int i = 0; i < size; i++){
+        cout << arr[i] << " ";
+        }
+    }
+    
+    cout << endl;
+}
+
+
+
+
+
+
+//алгоритм Беллмана-Форда
+//граф задается массивом рёбер
 void BellmanFord(edge E[], int n, int m, int s, int shortest[], int pred[]){
+    //первичная инициализация массивов
     for (int i = 0; i < n; i++){
         shortest[i] = INT_MAX;
         pred[i] = -1;
     }
+    //s - начальная вершина, считаем относительно неё
     shortest[s] = 0;
     
+    //по количеству вершин
     for (int i = 0; i < n; i++){
+        //по всем рёбрам
         for(int j = 0; j < m; j++){
             int u = E[j].source;
             int v = E[j].destination;
             int weight = E[j].weight;
 
+            //релаксация
             if(shortest[u] != INT_MAX && shortest[v] > shortest[u] + weight){
                 shortest[v] = shortest[u] + weight;
                 pred[v] = u;
@@ -59,6 +95,7 @@ void BellmanFord(edge E[], int n, int m, int s, int shortest[], int pred[]){
         }
     }
     
+    //если можно сделать n+1-ю итерацию, значит есть отрицательный цикл
     bool negativeCycles = false;
     for(int j = 0; j < m; j++){
         int u = E[j].source;
@@ -77,7 +114,10 @@ void BellmanFord(edge E[], int n, int m, int s, int shortest[], int pred[]){
     }
 }
 
+
+//алгоритм Флойда-Уоршалла
 void FloydWarshall(int** Graph, int size, int** shortest, int** pred){
+    //первичная инициализация массивов
     for(int i = 0; i < size; i++){
         for(int j = 0; j < size; j++){
             shortest[i][j] = INT_MAX;
@@ -107,25 +147,20 @@ void FloydWarshall(int** Graph, int size, int** shortest, int** pred){
 
     //идем u -> x -> v, обновляя кратчайшие пути
     //в pred записываем последнюю пройденную вершину до v
-    for(int x = 0; x < size; x++){
+    for(int x = 0; x < size; x++){  //перебираем x
         for(int u = 0; u < size; u++){
             for(int v = 0; v < size; v++){
+                //релаксация
                 if(shortest[u][v] > shortest[u][x] + shortest[x][v] && shortest[u][x] != INT_MAX && shortest[x][v] != INT_MAX){
                     shortest[u][v] = shortest[u][x] + shortest[x][v];
                     pred[u][v] = x;
                 }
             }
         }
-        // cout << "shortest:\n";
-        // PrintMatrix(shortest, size);
-        // cout << "pred:\n";
-        // PrintMatrix(pred, size);
-        // cout << endl;
     }
 }
 
-
-
+//очередь с приоритетом для алгоритма Примы
 //экземпляр элемента очереди с приоритетом
 struct PQueue{
     int data; //значение элемента
@@ -159,7 +194,7 @@ void PQPrint(){
         cout << curr->data << " ";
         curr = curr->next;
     }
-    cout << endl;
+    cout << "\nPriority: ";
     curr = front;
     while(curr){
         cout << curr->priority << " ";
@@ -216,15 +251,17 @@ int PQDelete(){
     }
 }
 
+//проверка на пустоту
 bool PQEmpty(){
     return !front;
 }
 
-void PQUpdatePriority(int u, int key){
+//обновление приоритета в очереди
+void PQUpdatePriority(int value, int newPriority){
     PQueue *curr = front;
     while(curr){
-        if(curr->data == u){
-            curr->priority = key;
+        if(curr->data == value){
+            curr->priority = newPriority;
             return;
         }
         curr = curr->next;
@@ -232,66 +269,81 @@ void PQUpdatePriority(int u, int key){
 }
 
 
-//Prima
+//алгоритм Прима
 void Prim(int** Graph, int size, int** tree){
-    int* distToTree = new int[size];
-    int* predInTree = new int[size];
+    int* distToTree = new int[size];    //дистанция до остовного дерева
+    int* predInTree = new int[size];    //элемент, к которому присоединен элемент в остовном дереве
+
+    //первичная инициализация массивов        
     for(int i = 0; i < size; i++){
         distToTree[i] = INT_MAX;
         predInTree[i] = -1;
     }
 
-    set<int> U = {};
-    distToTree[0] = 0;
+    set<int> U;         //множество вершин остовного дерева
+    distToTree[0] = 0;  //0-я вершина - начальная, ее приоритет 0(меньше всех, чтобы она вышла с очереди первой)
 
-    set<int> V;    
+    set<int> V;         //изначальное множество всех вершин графа         
     for(int i = 0; i< size; i++) V.insert(i);
 
-    PQueue Q;
-    for(int v: V) PQInsert(v, distToTree[v]);
+    PQueue Q;           //приоритетная очередь
+    for(int v: V) PQInsert(v, distToTree[v]);   //помещаем все вершины в очередь, передавая приоритеты
     PQPrint();
 
-    while(!PQEmpty()) {
-        int v = PQDelete();
-        V.erase(v);
-        U.insert(v);
+    while(!PQEmpty()) {     //пока очередь не пустая
+        int v = PQDelete(); //получаем элемент 
+        V.erase(v);         //удалить из множества вершин графа
+        U.insert(v);        //добавить ее во множество вершин оставного дерева
         cout << "v: " << v << endl;
         
         //по всем смежным вершинам
         cout << "u: ";
         for(int u = 0; u < size; u++){
             cout << u << " " << V.count(u) << " ";
+            //если вершина еще не в дереве, имеет связь с v, можно обновить ее приоритет
             if(V.count(u) == 1 && Graph[v][u] != 0 && distToTree[u] > Graph[v][u]){
-                predInTree[u] = v;
-                distToTree[u] = Graph[v][u];
+                predInTree[u] = v;              //установить v - ближайшей к u в дереве
+                distToTree[u] = Graph[v][u];    //обновить дистанцию = приоритет 
 
                 //обновить приоритет в очереди
                 PQUpdatePriority(u, distToTree[u]);
             }
         }
+        //промежуточный вывод
         cout << endl;
         PQPrint();
-        cout << "distToTree:\n";
+        cout << "distToTree: ";
         for (int i = 0; i < size; i++) {
             cout << distToTree[i] << " ";
         } cout << endl;
     }
+
+    //обнулить дерево
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
             tree[i][j] = 0;
         }   
     }
+
+    //заполнить дерево согласно полученным distToTree, predInTree
     for (int i = 1; i < size; i++) {
         int u = i, v = predInTree[i];
-        tree[u][v] = distToTree[u];
+        tree[u][v] = distToTree[u]; //зеркалим, т.к. остовное дерево - неориентированный граф
         tree[v][u] = distToTree[u];
     }
 }
 
 
+//алгоритм Краскала
 void Kruskal(int** Graph, int size, int** tree){
     //очистить дерево
-    int egdeCount = 0;
+    for(int i = 0; i < size; i++){
+        for(int j = 0; j < size; j++){
+            tree[i][j] = 0;
+        }
+    }
+
+    int egdeCount = 0;  //количество рёбер
     for(int i = 0; i < size; i++){
         for(int j = 0; j < size; j++){
             tree[i][j] = 0;
@@ -300,9 +352,10 @@ void Kruskal(int** Graph, int size, int** tree){
     }
     egdeCount /= 2;
 
-    //создадим массив ребер графа
+    //создадим массив ребер графа(уникальных)
     edge* edgeArr = new edge[egdeCount];
     int edgeIndex = 0;
+    //идем только по правому верхнему треугольнику матрицы, т.к. граф неориентированный
     for(int i = 0; i < size; i++){
         for(int j = i; j < size; j++){
             if(Graph[i][j] != 0){
@@ -310,9 +363,9 @@ void Kruskal(int** Graph, int size, int** tree){
                 edgeIndex++;    
             }
         }
-    }
+    }  
 
-    //отсортируем пузырьком)) за nlogn лень))
+    //отсортируем пузырьком по весу)) за nlogn лень))
     for(int i = 0; i < edgeIndex -1; i++){
         for(int j = i + 1; j < edgeIndex; j++){
             if(edgeArr[i].weight > edgeArr[j].weight){
@@ -320,113 +373,50 @@ void Kruskal(int** Graph, int size, int** tree){
             }
         }   
     }
+    //промежуточная печать
+    cout << "Edges:\n";
     for(int i = 0; i < edgeIndex; i++){
         cout << edgeArr[i].source << " " << edgeArr[i].destination << " " << edgeArr[i].weight << endl;
     }
+    cout << endl;
+    
 
-
-    set<set<int>> subsetNodes;
-    //инициализируем одиночными вершинами
+    set<set<int>> subsetNodes;  //множество, состоящее из подмножеств вершин графа
+    //изначально инициализируем одиночными изолированными вершинами
     for(int i = 0; i < size; i++){
-        set<int> subset = {i};
+        set<int> subset = {i};  //множество из одной изолированной вершины
         subsetNodes.insert(subset);
     }
     
+    //идем по отсортированному массиву рёбер
     for(int i = 0; i < edgeIndex; i++){
-        set<int> Uset, Vset;
-        for(set<int> subset: subsetNodes){
+        set<int> Uset, Vset;    //множества, в которые запишем подмножества, содержащие вершину u и v соответственно
+
+        for(set<int> subset: subsetNodes){  //идем по всем подмножествам вершин
             if(subset.count(edgeArr[i].source) == 1){
-                Uset = subset;
+                Uset = subset;  //записали подмножества, содержащее edge.source = u
             }
             if(subset.count(edgeArr[i].destination) == 1){
-                Vset = subset;
+                Vset = subset;  //записали подмножества, содержащее edge.destination = v
             }
         }
-        if(Uset != Vset){
-            subsetNodes.erase(Uset);
+        if(Uset != Vset){   //если это разные подмножества
+            subsetNodes.erase(Uset);    //удалим их из общего множества subsetNodes
             subsetNodes.erase(Vset);
             set<int> merge;
-            for(int el: Uset) merge.insert(el);
+            for(int el: Uset) merge.insert(el); //смёрджим их в одно общее подмножество вершин
             for(int el: Vset) merge.insert(el);
-            subsetNodes.insert(merge);
+            subsetNodes.insert(merge);          //поместим обратно в subsetNodes
 
             int u = edgeArr[i].source, v = edgeArr[i].destination, w = edgeArr[i].weight;
-            tree[u][v] = w;
+            tree[u][v] = w; //запишем соответствующие значения в остовное дерево
             tree[v][u] = w;
         }
     }
 
+    //вывод полученных подмножеств для наглядности
     for(set<int> subset: subsetNodes){
         for(int el: subset) cout << el << " "; 
         cout << endl;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// void BellmanFordMatrix(int** Graph, int n, int m, int s, int shortest[], int pred[]){
-//     for (int i = 0; i < n; i++){
-//         shortest[i] = INT_MAX;
-//         pred[i] = -1;
-//     }
-//     shortest[s] = 0;
-    
-//     for (int k = 0; k < n; k++){
-//         for(int u = 0; u < n; u++){
-//             for(int v = 0; v < n; v++){
-//                 int weight = Graph[u][v];
-//                 // int weight = (*Graph + u)[v];
-//                 if(weight != 0){
-//                     if(shortest[u] != INT_MAX && shortest[v] > shortest[u] + weight){
-//                         shortest[v] = shortest[u] + weight;
-//                         pred[v] = u;
-//                     }
-//                 }
-//             }   
-//         }
-//     }
-    
-//     bool negativeCycles = false;
-//     for(int u = 0; u < n; u++){
-//         for(int v = 0; v < n; v++){
-//             int weight = Graph[u][v];
-//             if(weight != 0 && shortest[u] != INT_MAX && shortest[v] > shortest[u] + weight){
-//                 negativeCycles = true;
-//                 break;
-//             }
-//         }   
-//         if(negativeCycles) break;       
-//     }
-
-//     if(negativeCycles){
-//         cout << "Граф содержит отрицательные циклы\n";
-//     } else{
-//         cout << "Граф не содержит отрицательные циклы\n";
-//     }
-// }

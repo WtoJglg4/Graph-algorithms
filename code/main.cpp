@@ -5,26 +5,6 @@
 #include "graphs.h"
 using namespace std;
 
-//печать shortest или pred
-void PrintTable(int arr[], int size, map<int, char> nodeNames, string tableName){
-    cout << tableName << ":\n";
-    for(int i = 0; i < size; i++){
-        cout << nodeNames.at(i) << " ";
-    }
-    cout << endl;
-    if (tableName == "Pred"){
-        for(int i = 0; i < size; i++){
-        cout << nodeNames.at(arr[i]) << " ";
-        }
-    } else{
-        for(int i = 0; i < size; i++){
-        cout << arr[i] << " ";
-        }
-    }
-    
-    cout << endl;
-}
-
 //g++ main.cpp graphs.cpp -o output
 int main(){
 
@@ -49,16 +29,13 @@ int main(){
                         edge{6, 7, 7}, edge{8, 4, -6}, edge{5, 9, 4},
                         edge{6, 10, 6}, edge{7, 11, 4}, edge{9, 8, 3},
                         edge{9, 10, 1}, edge{10, 11, 2}};
-
     
-    // PrintMatrix(matr, n);
     const map<int, char> nodeNames = {  {0, '0'}, {1, '1'}, {2, '2'}, {3, '3'},
                                         {4, '4'}, {5, '5'}, {6, '6'}, {7, '7'}, 
                                         {8, '8'}, {9, '9'}, {10, 'A'}, {11, 'B'}, {-1, 'H'} };
     const map<char, int> nodeNamesLetters = {   {'0', 0}, {'1', 1}, {'2', 2}, {'3', 3},
                                                 {'4', 4}, {'5', 5}, {'6', 6}, {'7', 7},
                                                 {'8', 8}, {'9', 9}, {'A', 10}, {'B', 11}, {'H', -1}};
-
 
     int shortest[n];
     int pred[n];
@@ -77,22 +54,22 @@ int main(){
 
     //FloydWarshall
     //(bellmanFord picture graph)
-    // const int fwSize = 12;
-    // int Graph[fwSize][fwSize] = {
-    // //   0  1  2  3  4  5  6  7  8  9  10 11
-    //     {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    //     {0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    //     {0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0},
-    //     {0, 0, 0, 0, 0, 0, 0, -3, 0, 0, 0, 0},
-    //     {7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    //     {0, 2, 0, 0, 5, 0, -2, 0, 0, 4, 0, 0},
-    //     {0, 0, 3, 0, 0, 0, 0, 7, 0, 0, 6, 0},
-    //     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4},
-    //     {0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0},
-    //     {0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 1, 0},
-    //     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
-    //     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-    // };
+    const int fwSize = 12;
+    int Graph[fwSize][fwSize] = {
+    //   0  1  2  3  4  5  6  7  8  9  10 11
+        {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, -3, 0, 0, 0, 0},
+        {7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 2, 0, 0, 5, 0, -2, 0, 0, 4, 0, 0},
+        {0, 0, 3, 0, 0, 0, 0, 7, 0, 0, 6, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4},
+        {0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 1, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+    };
 
     //floydWarshall small test picture
     // const int fwSize = 4;
@@ -115,24 +92,23 @@ int main(){
     //     {1, 0, 6, 7, 0},
     // };
 
-
     //(bellmanFord picture graph)
-    const int fwSize = 12;
-    int Graph[fwSize][fwSize] = {
-    //   0  1  2  3  4  5  6  7  8  9  10 11
-        {0, 1, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0},
-        {1, 0, 4, 0, 0, 2, 0, 0, 0, 0, 0, 0},
-        {0, 4, 0, 5, 0, 0, 3, 0, 0, 0, 0, 0},
-        {0, 0, 5, 0, 0, 0, 0,-3, 0, 0, 0, 0},
-        {7, 0, 0, 0, 0, 5, 0, 0,-6, 0, 0, 0},
-        {0, 2, 0, 0, 5, 0,-2, 0, 0, 4, 0, 0},
-        {0, 0, 3, 0, 0,-2, 0, 7, 0, 0, 6, 0},
-        {0, 0, 0,-3, 0, 0, 7, 0, 0, 0, 0, 4},
-        {0, 0, 0, 0,-6, 0, 0, 0, 0, 3, 0, 0},
-        {0, 0, 0, 0, 0, 4, 0, 0, 3, 0, 1, 0},
-        {0, 0, 0, 0, 0, 0, 6, 0, 0, 1, 0, 2},
-        {0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 2, 0}
-    };
+    //неориентированный
+    // int Graph[fwSize][fwSize] = {
+    // //   0  1  2  3  4  5  6  7  8  9  10 11
+    //     {0, 1, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0},
+    //     {1, 0, 4, 0, 0, 2, 0, 0, 0, 0, 0, 0},
+    //     {0, 4, 0, 5, 0, 0, 3, 0, 0, 0, 0, 0},
+    //     {0, 0, 5, 0, 0, 0, 0,-3, 0, 0, 0, 0},
+    //     {7, 0, 0, 0, 0, 5, 0, 0,-6, 0, 0, 0},
+    //     {0, 2, 0, 0, 5, 0,-2, 0, 0, 4, 0, 0},
+    //     {0, 0, 3, 0, 0,-2, 0, 7, 0, 0, 6, 0},
+    //     {0, 0, 0,-3, 0, 0, 7, 0, 0, 0, 0, 4},
+    //     {0, 0, 0, 0,-6, 0, 0, 0, 0, 3, 0, 0},
+    //     {0, 0, 0, 0, 0, 4, 0, 0, 3, 0, 1, 0},
+    //     {0, 0, 0, 0, 0, 0, 6, 0, 0, 1, 0, 2},
+    //     {0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 2, 0}
+    // };
 
     int* graphMatr[fwSize];
     int* shortestMatr[fwSize];
@@ -142,8 +118,10 @@ int main(){
         predMatr[i] = new int[fwSize];
         graphMatr[i] = Graph[i];
     }
+    cout << "FloydWarshall\n";
+    PrintMatrix(graphMatr, fwSize);
     FloydWarshall(graphMatr, fwSize, shortestMatr, predMatr);
-    cout << "FloydWarshall\nShortest:\n";
+    cout << "FW end\nShortest:\n";
     PrintMatrix(shortestMatr, fwSize);
     cout << "Pred:\n";
     PrintMatrix(predMatr, fwSize);
@@ -151,6 +129,16 @@ int main(){
 
 
     //Prim
+    //сделаем граф неориентированным
+    for(int i = 0; i < fwSize; i++){
+        for(int j = 0; j < fwSize; j++){
+            if(Graph[i][j] != 0) Graph[j][i] = Graph[i][j];
+        }
+    }
+    for(int i = 0; i < fwSize; i++){
+        graphMatr[i] = Graph[i];
+    }
+
     int* tree[fwSize];
     for (int i = 0; i < fwSize; i++) {
         tree[i] = new int[fwSize];
