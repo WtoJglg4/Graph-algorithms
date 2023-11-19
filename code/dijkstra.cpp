@@ -147,7 +147,7 @@ int main(){
     //                         {0, 0, 0, 0, 4},
     //                         {7, 0, 0, 5, 0}};
 
-    //мой граф 
+    //мой граф(dijkstra picture) 
     // const map<int, char> nodeNames = { {0, 'A'}, {1, 'B'}, {2, 'C'}, {3, 'D'}, {4, 'E'}, {5, 'F'}, {6, 'G'},{-1, 'H'} };
     // const map<char, int> nodeNamesLetters = { {'A', 0}, {'B', 1}, {'C', 2}, {'D', 3}, {'E', 4}, {'F', 5}, {'G', 6}, {'H', -1} };
     // int Graph[n][m] = {    {0, 2, 1, 0, 0, 6, 0},
@@ -236,5 +236,4 @@ int main(){
             cout << "->";
         }
     }
-
 }
