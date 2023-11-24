@@ -70,7 +70,24 @@ void PrintTable(int arr[], int size, map<int, char> nodeNames, string tableName)
 
 //алгоритм Беллмана-Форда
 //граф задается массивом рёбер
-void BellmanFord(edge E[], int n, int m, int s, int shortest[], int pred[]){
+void BellmanFord(int** Graph, int n, int s, int shortest[], int pred[], map<int, char> nodeNames, map<char, int> nodeNamesLetters){
+    int m = 0;
+    for(int i = 0; i < n; i++){
+        for(int j = 0; j < n; j++){
+            if(Graph[i][j] != 0) m++;
+        }
+    }
+    edge *E = new edge[m];
+    m = 0;
+    for(int i = 0; i < n; i++){
+        for(int j = 0; j < n; j++){
+            if(Graph[i][j] != 0){
+                E[m] = edge{i, j, Graph[i][j]};
+                m++;
+            }
+        }
+    }
+
     //первичная инициализация массивов
     for (int i = 0; i < n; i++){
         shortest[i] = INT_MAX;
@@ -93,6 +110,10 @@ void BellmanFord(edge E[], int n, int m, int s, int shortest[], int pred[]){
                 pred[v] = u;
             }
         }
+        cout << "Итерация " << i << endl;
+        PrintTable(shortest, n, nodeNames, "Shortest");
+        PrintTable(pred, n, nodeNames, "Pred");
+        cout << endl;
     }
     
     //если можно сделать n+1-ю итерацию, значит есть отрицательный цикл
@@ -112,6 +133,30 @@ void BellmanFord(edge E[], int n, int m, int s, int shortest[], int pred[]){
     } else{
         cout << "Граф не содержит отрицательные циклы\n";
     }
+
+    cout << "Введите конечную вершину: ";
+    char letter;
+    cin >> letter;
+    // int path[n - 1];
+    int path[n];
+    int nodeNum = nodeNamesLetters.at(letter);
+    path[0] = nodeNum;
+    int i = 1;
+    while (true) {
+        if (pred[nodeNum] == -1){
+            break;
+        }
+        path[i] = pred[nodeNum];
+        nodeNum = pred[nodeNum];
+        i++;
+    }
+    for (i = i-1;i> -1; i--){
+        cout << nodeNames.at(path[i]);
+        if (i != 0){
+            cout << "->";
+        }
+    }
+
 }
 
 

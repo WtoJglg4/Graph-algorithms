@@ -14,7 +14,7 @@ void PrintMatrix(int** Graph, int n);
 
 
 //исследуемые алгоритмы
-void BellmanFord(edge E[], int n, int m, int s, int shortest[], int pred[]);
+void BellmanFord(int** Graph, int n, int s, int shortest[], int pred[], map<int, char> nodeNames, map<char, int> nodeNamesLetters);
 void FloydWarshall(int** Graph, int size, int** shortest, int** pred);
 void Prim(int** Graph, int size, int** tree);
 void Kruskal(int** Graph, int size, int** tree);

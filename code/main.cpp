@@ -22,54 +22,79 @@ int main(){
     // const map<char, int> nodeNamesLetters = { {'S', 0}, {'A', 1}, {'B', 2}, {'C', 3}, {'H', -1} };
 
     //граф без отрицательных циклов(bellmanFord picture)
-    const int n = 12, m = 17;    //кол-во вершин и ребер
-    edge Edges[] =     {edge{0, 1, 1}, edge{1, 2, 4}, edge{2, 3, 5}, 
-                        edge{4, 0, 7}, edge{5, 1, 2}, edge{6, 2, 3},
-                        edge{3, 7, -3}, edge{5, 4, 5}, edge{5, 6, -2},
-                        edge{6, 7, 7}, edge{8, 4, -6}, edge{5, 9, 4},
-                        edge{6, 10, 6}, edge{7, 11, 4}, edge{9, 8, 3},
-                        edge{9, 10, 1}, edge{10, 11, 2}};
+    // const int n = 12, m = 17;    //кол-во вершин и ребер
+    // edge Edges[] =     {edge{0, 1, 1}, edge{1, 2, 4}, edge{2, 3, 5}, 
+    //                     edge{4, 0, 7}, edge{5, 1, 2}, edge{6, 2, 3},
+    //                     edge{3, 7, -3}, edge{5, 4, 5}, edge{5, 6, -2},
+    //                     edge{6, 7, 7}, edge{8, 4, -6}, edge{5, 9, 4},
+    //                     edge{6, 10, 6}, edge{7, 11, 4}, edge{9, 8, 3},
+    //                     edge{9, 10, 1}, edge{10, 11, 2}};
     
-    const map<int, char> nodeNames = {  {0, '0'}, {1, '1'}, {2, '2'}, {3, '3'},
-                                        {4, '4'}, {5, '5'}, {6, '6'}, {7, '7'}, 
-                                        {8, '8'}, {9, '9'}, {10, 'A'}, {11, 'B'}, {-1, 'H'} };
-    const map<char, int> nodeNamesLetters = {   {'0', 0}, {'1', 1}, {'2', 2}, {'3', 3},
-                                                {'4', 4}, {'5', 5}, {'6', 6}, {'7', 7},
-                                                {'8', 8}, {'9', 9}, {'A', 10}, {'B', 11}, {'H', -1}};
+    // const map<int, char> nodeNames = {  {0, '0'}, {1, '1'}, {2, '2'}, {3, '3'},
+    //                                     {4, '4'}, {5, '5'}, {6, '6'}, {7, '7'}, 
+    //                                     {8, '8'}, {9, '9'}, {10, 'A'}, {11, 'B'}, {-1, 'H'} };
+    // const map<char, int> nodeNamesLetters = {   {'0', 0}, {'1', 1}, {'2', 2}, {'3', 3},
+    //                                             {'4', 4}, {'5', 5}, {'6', 6}, {'7', 7},
+    //                                             {'8', 8}, {'9', 9}, {'A', 10}, {'B', 11}, {'H', -1}};
 
-    int shortest[n];
-    int pred[n];
+    //мой граф(dijkstra picture) 
+    // const map<int, char> nodeNames = { {0, 'A'}, {1, 'B'}, {2, 'C'}, {3, 'D'}, {4, 'E'}, {5, 'F'}, {6, 'G'},{-1, 'H'} };
+    // const map<char, int> nodeNamesLetters = { {'A', 0}, {'B', 1}, {'C', 2}, {'D', 3}, {'E', 4}, {'F', 5}, {'G', 6}, {'H', -1} };
+    const int fwSize = 7;
+    int Graph[fwSize][fwSize] = {   {0, 2, 1, 0, 0, 6, 0},
+                                    {0, 0, 0, 0, 0, 7, 0},
+                                    {0, 0, 0, 5, 2, 0, 0},
+                                    {0, 0, 0, 0, 1, 2, 0},
+                                    {0, 0, 0, 2, 0, 1, 4},
+                                    {0, 0, 0, 0, 0, 0, 1},
+                                    {0, 0, 0, 0, 0, 0, 1}};
+    const map<int, char> nodeNames = { {0, 'A'}, {1, 'B'}, {2, 'C'}, {3, 'D'}, {4, 'E'}, {5, 'F'}, {6, 'G'},{-1, 'H'} };
+    const map<char, int> nodeNamesLetters = { {'A', 0}, {'B', 1}, {'C', 2}, {'D', 3}, {'E', 4}, {'F', 5}, {'G', 6}, {'H', -1} };
+    // edge Edges[] =     {edge{0, 1, 2}, edge{0, 2, 1}, edge{0, 5, 6}, 
+    //                     edge{1, 5, 7}, edge{2, 3, 5}, edge{2, 4, 2},
+    //                     edge{3, 4, 1}, edge{3, 5, 2}, edge{4, 3, 2},
+    //                     edge{4, 5, 1}, edge{4, 6, 4}, edge{5, 6, 1}};
+
+    int* graphMatr[fwSize];
+    for(int i = 0; i < fwSize; i++){
+        graphMatr[i] = Graph[i];
+    }
+
+    int shortest[fwSize];
+    int pred[fwSize];
     int s;
-
+    char sLetter;
     cout << "Bellman-Ford\n";
     cout << "Введите начальную вершину: ";
-    cin >> s;
-    BellmanFord(Edges, n, m, s, shortest, pred);
+    // cin >> s;
+    cin >> sLetter;
+    s = nodeNamesLetters.at(sLetter);
+    BellmanFord(graphMatr, fwSize, s, shortest, pred, nodeNames, nodeNamesLetters);
     cout << endl; 
-    PrintTable(shortest, n, nodeNames, "Shortest");
-    PrintTable(pred, n, nodeNames, "Pred");
+    PrintTable(shortest, fwSize, nodeNames, "Shortest");
+    PrintTable(pred, fwSize, nodeNames, "Pred");
     cout << endl;
 
 
 
     //FloydWarshall
     //(bellmanFord picture graph)
-    const int fwSize = 12;
-    int Graph[fwSize][fwSize] = {
-    //   0  1  2  3  4  5  6  7  8  9  10 11
-        {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, -3, 0, 0, 0, 0},
-        {7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 2, 0, 0, 5, 0, -2, 0, 0, 4, 0, 0},
-        {0, 0, 3, 0, 0, 0, 0, 7, 0, 0, 6, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4},
-        {0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 1, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-    };
+    // const int fwSize = 12;
+    // int Graph[fwSize][fwSize] = {
+    // //   0  1  2  3  4  5  6  7  8  9  10 11
+    //     {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    //     {0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    //     {0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0},
+    //     {0, 0, 0, 0, 0, 0, 0, -3, 0, 0, 0, 0},
+    //     {7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    //     {0, 2, 0, 0, 5, 0, -2, 0, 0, 4, 0, 0},
+    //     {0, 0, 3, 0, 0, 0, 0, 7, 0, 0, 6, 0},
+    //     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4},
+    //     {0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0},
+    //     {0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 1, 0},
+    //     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
+    //     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+    // };
 
     //floydWarshall small test picture
     // const int fwSize = 4;
@@ -110,7 +135,7 @@ int main(){
     //     {0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 2, 0}
     // };
 
-    int* graphMatr[fwSize];
+   
     int* shortestMatr[fwSize];
     int* predMatr[fwSize];
     for (int i = 0; i < fwSize; i++) {
