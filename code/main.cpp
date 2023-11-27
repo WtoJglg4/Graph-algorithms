@@ -74,7 +74,9 @@ int main(){
     PrintTable(shortest, fwSize, nodeNames, "Shortest");
     PrintTable(pred, fwSize, nodeNames, "Pred");
     cout << endl;
-
+    
+    int a;
+    cin >> a;
 
 
     //FloydWarshall
@@ -152,6 +154,11 @@ int main(){
     PrintMatrix(predMatr, fwSize);
     cout << endl;
 
+    
+    int asd;
+    cin >> asd;
+
+
 
     //Prim
     //сделаем граф неориентированным
@@ -174,6 +181,9 @@ int main(){
     cout << "Tree: \n";
     PrintMatrix(tree, fwSize);
 
+    int adas;
+    cin >> adas;
+
     //Kruskal
     cout << "\nKruskal\n";
     PrintMatrix(graphMatr, fwSize);
@@ -181,6 +191,8 @@ int main(){
     cout << "Tree: \n";
     PrintMatrix(tree, fwSize);
 
-    int a;
     cin >> a;
+    getchar();
+    system("pause");
+    cout << a;
 }
